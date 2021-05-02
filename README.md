@@ -1,3 +1,6 @@
+# Modification by wyzypa from May.1st 2021
+Add `--out-source-gap-alignments` for `tools/generate_bad_tags.py` to output SRC-GAP alignments information.
+
 Word Quality Estimation for NMT
 ======
 

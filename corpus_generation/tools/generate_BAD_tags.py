@@ -188,7 +188,7 @@ def get_quality_tags(mt_tokens, pe_tokens, pe_mt_alignments, pe2source,
         source_sentence_bad_indices = set()
         error_detail_sent = []
         mt_position = 0
-        source_gap_alignment = collections.defaultdict(list)
+        source_gap_alignment = collections.defaultdict(set)
 
         # Loop over alignments. This has the length of the edit-distance aligned
         # sequences.
@@ -207,7 +207,7 @@ def get_quality_tags(mt_tokens, pe_tokens, pe_mt_alignments, pe2source,
 
                     # yield Source-GAP Alignment
                     for source_pos in source_positions:
-                        source_gap_alignment[source_pos].append(mt_position)
+                        source_gap_alignment[source_pos].add(mt_position)
 
                 elif fluency_rule == 'ignore-shift-set':
 
