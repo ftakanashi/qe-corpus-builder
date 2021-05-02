@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="21e622a6-8780-4f96-8f8f-16ef61716a20" name="默认更改列表" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="1rxbhSVkLGCh4olKRp87A3ZWhRg" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/corpus_generation/tools" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="generate_BAD_tags" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="qe-corpus-builder" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/corpus_generation/tools" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/corpus_generation/tools/generate_BAD_tags.py" />
+      <option name="PARAMETERS" value="--in-source-tokens tmp_data/train.src --in-pe-tokens tmp_data/train.pe --in-mt-tokens tmp_data/train.mt --in-source-pe-alignments tmp_data/train.simple-src-pe.align --in-pe-mt-alignments tmp_data/train.pe-mt.align --out-source-tags tmp_data/output/train.source_tags --out-target-tags tmp_data/output/train.tags --fluency-rule normal" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.generate_BAD_tags" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="21e622a6-8780-4f96-8f8f-16ef61716a20" name="默认更改列表" comment="" />
+      <created>1619920806154</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1619920806154</updated>
+      <workItem from="1619920807892" duration="4021000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="2" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="552" y="259" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1619921037550">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state x="552" y="259" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1440.900@0.0.1440.900" timestamp="1619921037550" />
+    <state x="410" y="65" key="#generate_BAD_tags" timestamp="1619921301631">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state x="410" y="65" key="#generate_BAD_tags/0.0.1440.900@0.0.1440.900" timestamp="1619921301631" />
+    <state x="682" y="323" key="#xdebugger.evaluate" timestamp="1619922220253">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state x="682" y="323" key="#xdebugger.evaluate/0.0.1440.900@0.0.1440.900" timestamp="1619922220253" />
+    <state width="1398" height="294" key="GridCell.Tab.0.bottom" timestamp="1619924368805">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state width="1398" height="294" key="GridCell.Tab.0.bottom/0.0.1440.900@0.0.1440.900" timestamp="1619924368805" />
+    <state width="1398" height="294" key="GridCell.Tab.0.center" timestamp="1619924368804">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state width="1398" height="294" key="GridCell.Tab.0.center/0.0.1440.900@0.0.1440.900" timestamp="1619924368804" />
+    <state width="1398" height="294" key="GridCell.Tab.0.left" timestamp="1619924368803">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state width="1398" height="294" key="GridCell.Tab.0.left/0.0.1440.900@0.0.1440.900" timestamp="1619924368803" />
+    <state width="1398" height="294" key="GridCell.Tab.0.right" timestamp="1619924368805">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state width="1398" height="294" key="GridCell.Tab.0.right/0.0.1440.900@0.0.1440.900" timestamp="1619924368805" />
+    <state width="1398" height="294" key="GridCell.Tab.1.bottom" timestamp="1619924369494">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state width="1398" height="294" key="GridCell.Tab.1.bottom/0.0.1440.900@0.0.1440.900" timestamp="1619924369494" />
+    <state width="1398" height="294" key="GridCell.Tab.1.center" timestamp="1619924369492">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state width="1398" height="294" key="GridCell.Tab.1.center/0.0.1440.900@0.0.1440.900" timestamp="1619924369492" />
+    <state width="1398" height="294" key="GridCell.Tab.1.left" timestamp="1619924369491">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state width="1398" height="294" key="GridCell.Tab.1.left/0.0.1440.900@0.0.1440.900" timestamp="1619924369491" />
+    <state width="1398" height="294" key="GridCell.Tab.1.right" timestamp="1619924369493">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state width="1398" height="294" key="GridCell.Tab.1.right/0.0.1440.900@0.0.1440.900" timestamp="1619924369493" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/corpus_generation/tools/generate_BAD_tags.py</url>
+          <line>380</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/corpus_generation/tools/generate_BAD_tags.py</url>
+          <line>168</line>
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/corpus_generation/tools/generate_BAD_tags.py</url>
+          <line>306</line>
+          <option name="timeStamp" value="6" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/corpus_generation/tools/generate_BAD_tags.py</url>
+          <line>350</line>
+          <option name="timeStamp" value="7" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/qe_corpus_builder$generate_BAD_tags.coverage" NAME="generate_BAD_tags Coverage Results" MODIFIED="1619951486808" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/corpus_generation/tools" />
+  </component>
+</project>

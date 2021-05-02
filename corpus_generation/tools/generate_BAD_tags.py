@@ -1,5 +1,6 @@
 import os
 import codecs
+import collections
 import argparse
 from collections import defaultdict
 from itertools import chain
@@ -40,10 +41,17 @@ def check_out_of_bounds(tokens, alignments, source=True):
     for sent_index in range(len(tokens)):
 
         length = len(tokens[sent_index])
+
+        # Adaption for Python3
+        # if source:
+        #     max_index = max([x[0] for x in alignments[sent_index]])
+        # else:
+        #     max_index = max([x[1] for x in alignments[sent_index]])
+
         if source:
-            max_index = max([x[0] for x in alignments[sent_index]])
+            max_index = max([x[0] if x[0] is not None else -1 for x in alignments[sent_index]])
         else:
-            max_index = max([x[1] for x in alignments[sent_index]])
+            max_index = max([x[1] if x[1] is not None else -1 for x in alignments[sent_index]])
         if max_index >= length:
             print("Sentence Index: %d" % sent_index)
             print(tokens[sent_index])
@@ -104,6 +112,13 @@ def parse_arguments(sys_argv):
         required=True,
         type=str
     )
+    # new argument indicating output file of SRC-GAP alignment
+    parser.add_argument(
+        '--out-source-gap-alignments',
+        help='Source-GAP Alignment per sentence.',
+        default=None,
+        type=str
+    )
     parser.add_argument(
         '--fluency-rule',
         help='Rules used to determine source tags',
@@ -161,6 +176,10 @@ def get_quality_tags(mt_tokens, pe_tokens, pe_mt_alignments, pe2source,
     target_tags = []
     source_tags = []
     error_detail = []
+
+    # SRC-GAP Alignment
+    src_gap_alignments = []
+
     for sentence_index in range(len(mt_tokens)):
 
         # Variables for this sentence
@@ -169,6 +188,7 @@ def get_quality_tags(mt_tokens, pe_tokens, pe_mt_alignments, pe2source,
         source_sentence_bad_indices = set()
         error_detail_sent = []
         mt_position = 0
+        source_gap_alignment = collections.defaultdict(list)
 
         # Loop over alignments. This has the length of the edit-distance aligned
         # sequences.
@@ -184,6 +204,10 @@ def get_quality_tags(mt_tokens, pe_tokens, pe_mt_alignments, pe2source,
                     source_positions = pe2source[sentence_index][pe_idx]
                     source_sentence_bad_indices |= set(source_positions)
                     error_type = 'deletion'
+
+                    # yield Source-GAP Alignment
+                    for source_pos in source_positions:
+                        source_gap_alignment[source_pos].append(mt_position)
 
                 elif fluency_rule == 'ignore-shift-set':
 
@@ -312,6 +336,9 @@ def get_quality_tags(mt_tokens, pe_tokens, pe_mt_alignments, pe2source,
         #
         error_detail.append(error_detail_sent)
 
+        # yield Source-GAP Alignment of one triplets of data
+        src_gap_alignments.append(source_gap_alignment)
+
     # Basic sanity checks
     assert all(
         [len(aa)*2 + 1 == len(bb) for aa, bb in zip(mt_tokens, target_tags)]
@@ -320,7 +347,15 @@ def get_quality_tags(mt_tokens, pe_tokens, pe_mt_alignments, pe2source,
         [len(aa) == len(bb) for aa, bb in zip(source_tokens, source_tags)]
     ), "tag creation failed"
 
-    return source_tags, target_tags, error_detail
+    # check the sanity of SRC-GAP alignments with generated tags
+    for sent_i, src_gap_alignment in enumerate(src_gap_alignments):
+        for src_i, tgt_is in src_gap_alignment.items():
+            assert source_tags[sent_i][src_i] == 'BAD'
+            for tgt_i in tgt_is:
+                assert target_tags[sent_i][tgt_i*2] == 'BAD'
+
+    # return source_tags, target_tags, error_detail
+    return source_tags, target_tags, error_detail, src_gap_alignments
 
 
 def write_tags(output_file, tags):
@@ -350,7 +385,7 @@ if __name__ == '__main__':
     ) = read_data(args)
 
     # GET TAGS FOR SOURCE AND TARGET
-    source_tags, target_tags, error_detail = get_quality_tags(
+    source_tags, target_tags, error_detail, src_gap_alignments = get_quality_tags(
         mt_tokens,
         pe_tokens,
         pe_mt_alignments,
@@ -372,3 +407,12 @@ if __name__ == '__main__':
     print("Wrote %s" % args.out_source_tags)
     write_tags(args.out_target_tags, target_tags)
     print("Wrote %s" % args.out_target_tags)
+
+    # Write SRC-GAP alignments
+    if args.out_source_gap_alignments:
+        with open(args.out_source_gap_alignments, 'w') as wf:
+            for row_info in src_gap_alignments:
+                aligns = []
+                for k in sorted(row_info):
+                    for t_i in row_info[k]: aligns.append(f'{k}-{t_i * 2}')
+                wf.write(' '.join(aligns) + '\n')
