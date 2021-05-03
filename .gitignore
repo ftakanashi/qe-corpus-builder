@@ -4,4 +4,4 @@ external_tools/
 *swp
 *.pyc
 venv/
-corpus_generation/tools/tmp*
+tools/tmp*
