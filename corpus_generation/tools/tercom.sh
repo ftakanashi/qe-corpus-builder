@@ -41,8 +41,8 @@ fi
 # Format files in tercom format (SGML NIST)
 # encoding is utf-8 and quotes are scaped
 echo "Formating text"
-python ./tools/format_tercom.py ${in_reference_file} ${in_work_folder}/${reference_basename}
-python ./tools/format_tercom.py ${in_hypothesis_file} ${in_work_folder}/${hypothesis_basename}
+python2 ./tools/format_tercom.py ${in_reference_file} ${in_work_folder}/${reference_basename}
+python2 ./tools/format_tercom.py ${in_hypothesis_file} ${in_work_folder}/${hypothesis_basename}
 
 # Call tercom
 echo "Producing tercom XML"
@@ -80,7 +80,7 @@ if [ "$use_shift" != "true" ]; then
 	
     # Reformat
     echo "Reading XML"
-    python ./tools/edit_alignments.py \
+    python2 ./tools/edit_alignments.py \
 	   ${in_work_folder}/$(basename out_tercom_file).xml \
 	   ${in_hypothesis_file} \
 	   ${in_reference_file}  \
