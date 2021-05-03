@@ -220,6 +220,9 @@ def get_quality_tags(mt_tokens, pe_tokens, pe_mt_alignments, pe2source,
                         source_positions = pe2source[sentence_index][pe_idx]
                         source_sentence_bad_indices |= set(source_positions)
                         error_type = 'deletion'
+
+                        for source_pos in source_positions:
+                            source_gap_alignment[source_pos].add(mt_position)
                     else:
                         source_positions = None
                         error_type = 'deletion (shift)'
