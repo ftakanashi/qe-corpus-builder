@@ -34,7 +34,7 @@ if __name__ == '__main__':
         with codecs.open(in_target_file, 'r', 'utf-8') as target_fid:
             with codecs.open(out_paralel_corpus, 'w', 'utf-8') as paralel_fid:
                 faulty_lines = 0
-                for line_n in xrange(nr_lines2):
+                for line_n in range(nr_lines2):
 
                     source_line = source_fid.readline().strip()
                     target_line = target_fid.readline().strip()
