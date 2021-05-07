@@ -9,7 +9,6 @@ from operator import itemgetter
 import json
 import sys
 
-
 GAP_ERRORS = True
 SOURCE_ERRORS = True
 
@@ -63,7 +62,6 @@ def check_out_of_bounds(tokens, alignments, source=True):
 
 
 def parse_arguments(sys_argv):
-
     parser = argparse.ArgumentParser(
         prog='New word-level tags version 0.0.1'
     )
@@ -112,13 +110,21 @@ def parse_arguments(sys_argv):
         required=True,
         type=str
     )
-    # new argument indicating output file of SRC-GAP alignment
+
+    # new argument indicating output file of SRC-MT alignments
     parser.add_argument(
-        '--out-source-gap-alignments',
-        help='Source-GAP Alignment per sentence.',
+        '--out-source-mt-word-alignments',
+        help='Source-MT Word alignment per sentence.',
         default=None,
         type=str
     )
+    parser.add_argument(
+        '--out-source-mt-gap-alignments',
+        help='Source-MT Gap alignment per sentence.',
+        default=None,
+        type=str
+    )
+
     parser.add_argument(
         '--fluency-rule',
         help='Rules used to determine source tags',
@@ -131,7 +137,6 @@ def parse_arguments(sys_argv):
 
 
 def read_data(args):
-
     source_tokens = read_file(args.in_source_tokens)
     mt_tokens = read_file(args.in_mt_tokens)
     pe_tokens = read_file(args.in_pe_tokens)
@@ -171,14 +176,14 @@ def read_data(args):
 
 def get_quality_tags(mt_tokens, pe_tokens, pe_mt_alignments, pe2source,
                      fluency_rule=None):
-
     # Word + Gap Tags
     target_tags = []
     source_tags = []
     error_detail = []
 
-    # SRC-GAP Alignment
-    src_gap_alignments = []
+    # SRC-MT Alignment
+    src_mt_word_alignments = []
+    src_mt_gap_alignments = []
 
     for sentence_index in range(len(mt_tokens)):
 
@@ -188,7 +193,8 @@ def get_quality_tags(mt_tokens, pe_tokens, pe_mt_alignments, pe2source,
         source_sentence_bad_indices = set()
         error_detail_sent = []
         mt_position = 0
-        source_gap_alignment = collections.defaultdict(set)
+        source_mt_word_alignment = collections.defaultdict(set)
+        source_mt_gap_alignment = collections.defaultdict(set)
 
         # Loop over alignments. This has the length of the edit-distance aligned
         # sequences.
@@ -197,7 +203,7 @@ def get_quality_tags(mt_tokens, pe_tokens, pe_mt_alignments, pe2source,
             if mt_idx is None:
 
                 # Deleted word error (need to store for later)
-                sent_deletion_indices.append(mt_position-1)
+                sent_deletion_indices.append(mt_position - 1)
 
                 if fluency_rule == 'normal' or fluency_rule == "missing-only":
 
@@ -207,22 +213,22 @@ def get_quality_tags(mt_tokens, pe_tokens, pe_mt_alignments, pe2source,
 
                     # yield Source-GAP Alignment
                     for source_pos in source_positions:
-                        source_gap_alignment[source_pos].add(mt_position)
+                        source_mt_gap_alignment[source_pos].add(mt_position)
 
                 elif fluency_rule == 'ignore-shift-set':
 
                     # RULE: If word exists elsewhere in the sentence do not
                     # propagate error to the source.
                     if (
-                        pe_tokens[sentence_index][pe_idx] not in
-                        mt_tokens[sentence_index]
+                            pe_tokens[sentence_index][pe_idx] not in
+                            mt_tokens[sentence_index]
                     ):
                         source_positions = pe2source[sentence_index][pe_idx]
                         source_sentence_bad_indices |= set(source_positions)
                         error_type = 'deletion'
 
                         for source_pos in source_positions:
-                            source_gap_alignment[source_pos].add(mt_position)
+                            source_mt_gap_alignment[source_pos].add(mt_position)
                     else:
                         source_positions = None
                         error_type = 'deletion (shift)'
@@ -233,7 +239,7 @@ def get_quality_tags(mt_tokens, pe_tokens, pe_mt_alignments, pe2source,
                 # Store error detail
                 error_detail_sent.append({
                     'type': error_type,
-                    'gap_position': mt_position-1,
+                    'gap_position': mt_position - 1,
                     'target_position': mt_idx,
                     'source_positions': source_positions,
                 })
@@ -252,8 +258,8 @@ def get_quality_tags(mt_tokens, pe_tokens, pe_mt_alignments, pe2source,
                 })
 
             elif (
-                mt_tokens[sentence_index][mt_idx] !=
-                pe_tokens[sentence_index][pe_idx]
+                    mt_tokens[sentence_index][mt_idx] !=
+                    pe_tokens[sentence_index][pe_idx]
             ):
 
                 # Substitution error
@@ -271,17 +277,23 @@ def get_quality_tags(mt_tokens, pe_tokens, pe_mt_alignments, pe2source,
                     source_sentence_bad_indices |= set(source_positions)
                     error_type = 'substitution'
 
+                    for source_pos in source_positions:
+                        source_mt_word_alignment[source_pos].add(mt_idx)
+
                 elif fluency_rule == 'ignore-shift-set':
 
                     # RULE: If word exists elsewhere in the sentence do not
                     # propagate error to the source.
                     if (
-                        pe_tokens[sentence_index][pe_idx] not in
-                        mt_tokens[sentence_index]
+                            pe_tokens[sentence_index][pe_idx] not in
+                            mt_tokens[sentence_index]
                     ):
                         source_positions = pe2source[sentence_index][pe_idx]
                         source_sentence_bad_indices |= set(source_positions)
                         error_type = 'substitution'
+
+                        for source_pos in source_positions:
+                            source_mt_word_alignment[source_pos].add(mt_idx)
                     else:
                         source_positions = None
                         error_type = 'substitution (shift)'
@@ -293,8 +305,6 @@ def get_quality_tags(mt_tokens, pe_tokens, pe_mt_alignments, pe2source,
 
                 else:
                     raise Exception("Uknown rule %s" % fluency_rule)
-
-
 
                 # Store error detail
                 error_detail_sent.append({
@@ -308,6 +318,10 @@ def get_quality_tags(mt_tokens, pe_tokens, pe_mt_alignments, pe2source,
                 # OK
                 sent_tags.append('OK')
                 mt_position += 1
+
+                source_positions = pe2source[sentence_index][pe_idx]
+                for source_pos in source_positions:
+                    source_mt_word_alignment[source_pos].add(mt_idx)
 
         # Insert deletion errors as gaps
         if GAP_ERRORS:
@@ -340,25 +354,34 @@ def get_quality_tags(mt_tokens, pe_tokens, pe_mt_alignments, pe2source,
         error_detail.append(error_detail_sent)
 
         # yield Source-GAP Alignment of one triplets of data
-        src_gap_alignments.append(source_gap_alignment)
+        src_mt_gap_alignments.append(source_mt_gap_alignment)
+        src_mt_word_alignments.append(source_mt_word_alignment)
 
     # Basic sanity checks
     assert all(
-        [len(aa)*2 + 1 == len(bb) for aa, bb in zip(mt_tokens, target_tags)]
+        [len(aa) * 2 + 1 == len(bb) for aa, bb in zip(mt_tokens, target_tags)]
     ), "tag creation failed"
     assert all(
         [len(aa) == len(bb) for aa, bb in zip(source_tokens, source_tags)]
     ), "tag creation failed"
 
-    # check the sanity of SRC-GAP alignments with generated tags
-    for sent_i, src_gap_alignment in enumerate(src_gap_alignments):
-        for src_i, tgt_is in src_gap_alignment.items():
+    # check the sanity of SRC-MT Gap alignments with generated tags
+    for sent_i, src_mt_gap_alignment in enumerate(src_mt_gap_alignments):
+        for src_i, tgt_is in src_mt_gap_alignment.items():
             assert source_tags[sent_i][src_i] == 'BAD'
             for tgt_i in tgt_is:
-                assert target_tags[sent_i][tgt_i*2] == 'BAD'
+                assert target_tags[sent_i][tgt_i * 2] == 'BAD'
+    # check the sanity of SRC-MT Word alignment with generated tags
+    for sent_i, src_mt_word_alignment in enumerate(src_mt_word_alignments):
+        for src_i, tgt_is in src_mt_word_alignment.items():
+            for tgt_i in tgt_is:
+                src_tag = source_tags[sent_i][src_i]
+                tgt_tag = target_tags[sent_i][tgt_i * 2 + 1]
+                if src_tag == 'OK': assert tgt_tag == 'OK'
+                if tgt_tag == 'BAD': assert src_tag == 'BAD'
 
     # return source_tags, target_tags, error_detail
-    return source_tags, target_tags, error_detail, src_gap_alignments
+    return source_tags, target_tags, error_detail, src_mt_word_alignments, src_mt_gap_alignments
 
 
 def write_tags(output_file, tags):
@@ -372,6 +395,7 @@ def write_error_detail(output_file, error_detail):
     with open(output_file, 'w') as fid:
         for error_sent in error_detail:
             fid.write("%s\n" % json.dumps(error_sent))
+
 
 if __name__ == '__main__':
 
@@ -388,13 +412,14 @@ if __name__ == '__main__':
     ) = read_data(args)
 
     # GET TAGS FOR SOURCE AND TARGET
-    source_tags, target_tags, error_detail, src_gap_alignments = get_quality_tags(
-        mt_tokens,
-        pe_tokens,
-        pe_mt_alignments,
-        pe2source,
-        fluency_rule=args.fluency_rule
-    )
+    source_tags, target_tags, error_detail, src_mt_word_alignments, src_mt_gap_alignments = \
+        get_quality_tags(
+            mt_tokens,
+            pe_tokens,
+            pe_mt_alignments,
+            pe2source,
+            fluency_rule=args.fluency_rule
+        )
 
     # Store a more details summary of errors
     error_detail_flat = list(chain.from_iterable(error_detail))
@@ -411,10 +436,19 @@ if __name__ == '__main__':
     write_tags(args.out_target_tags, target_tags)
     print("Wrote %s" % args.out_target_tags)
 
-    # Write SRC-GAP alignments
-    if args.out_source_gap_alignments:
-        with open(args.out_source_gap_alignments, 'w') as wf:
-            for row_info in src_gap_alignments:
+    # Write SRC-MT Word alignments
+    if args.out_source_mt_word_alignments:
+        with open(args.out_source_mt_word_alignments, 'w') as wf:
+            for row_info in src_mt_word_alignments:
+                aligns = []
+                for k in sorted(row_info):
+                    for t_i in row_info[k]: aligns.append(f'{k}-{t_i}')
+                wf.write(' '.join(aligns) + '\n')
+
+    # Write SRC-MT Gap alignments
+    if args.out_source_mt_gap_alignments:
+        with open(args.out_source_mt_gap_alignments, 'w') as wf:
+            for row_info in src_mt_gap_alignments:
                 aligns = []
                 for k in sorted(row_info):
                     for t_i in row_info[k]: aligns.append(f'{k}-{t_i * 2}')
