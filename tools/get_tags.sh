@@ -22,8 +22,8 @@ out_src_pe_alignments=${out_folder}/${prefix}.src-pe
 out_src_mt_word_alignments=${out_folder}/${prefix}.src-mt.align
 out_src_mt_gap_alignments=${out_folder}/${prefix}.src-gap.align
 out_edit_alignments=${out_folder}/${prefix}.pe-mt
-out_source_tags=${out_folder}/source_tags
-out_target_tags=${out_folder}/tags
+out_source_tags=${out_folder}/${prefix}.source_tags
+out_target_tags=${out_folder}/${prefix}.tags
 
 # Cleanup temp
 [ -d "${out_temporal_folder}" ] && rm -R "${out_temporal_folder}"
@@ -87,7 +87,7 @@ then
   cp ${in_source_file} ${out_folder}/${prefix}.src
   cp ${in_mt_file} ${out_folder}/${prefix}.mt
   cp ${in_pe_file} ${out_folder}/${prefix}.pe
-  mv ${out_folder}/hter ${out_folder}/${prefix}.hter
+#  mv ${out_folder}/hter ${out_folder}/${prefix}.hter
   mv ${out_folder}/tags ${out_folder}/${prefix}.tags
   mv ${out_folder}/source_tags ${out_folder}/${prefix}.source_tags
   rm ${out_folder}/source_tags.json
