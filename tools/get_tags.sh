@@ -18,7 +18,9 @@ fluency_rule=$7
 prefix=$8
 
 out_src_pe_alignments=${out_folder}/${prefix}.src-pe
-out_src_mt_alignments=${out_folder}/${prefix}.src-mt.alignments
+#out_src_mt_alignments=${out_folder}/${prefix}.src-mt.alignments
+out_src_mt_word_alignments=${out_folder}/${prefix}.src-mt.align
+out_src_mt_gap_alignments=${out_folder}/${prefix}.src-gap.align
 out_edit_alignments=${out_folder}/${prefix}.pe-mt
 out_source_tags=${out_folder}/source_tags
 out_target_tags=${out_folder}/tags
@@ -37,13 +39,13 @@ bash ./tools/align.sh \
     ${out_src_pe_alignments}
 
 # Generate source-mt alignments
-echo "Generating src-mt alignments"
-bash ./tools/align.sh \
-    ${in_source_file} \
-    ${in_mt_file} \
-    ${in_fast_align_folder} \
-    ${out_temporal_folder}/fast_align/ \
-    ${out_src_mt_alignments}
+#echo "Generating src-mt alignments"
+#bash ./tools/align.sh \
+#    ${in_source_file} \
+#    ${in_mt_file} \
+#    ${in_fast_align_folder} \
+#    ${out_temporal_folder}/fast_align/ \
+#    ${out_src_mt_alignments}
 
 # Generate tercom target-side alignments 
 echo "Generating Tercom alignments"
@@ -64,19 +66,21 @@ python ./tools/generate_BAD_tags.py \
     --in-pe-mt-alignments ${out_edit_alignments} \
     --out-source-tags ${out_source_tags} \
     --out-target-tags ${out_target_tags} \
+    --out-source-mt-word-alignments ${out_src_mt_word_alignments} \
+    --out-source-mt-gap-alignments ${out_src_mt_gap_alignments} \
     --fluency-rule ${fluency_rule}
 
 # now compute HTER -- for this we allow shifts in tercom
-echo "Generating Tercom alignments for HTER values"
-bash ./tools/tercom.sh \
-    ${in_mt_file} \
-    ${in_pe_file} \
-    ${out_temporal_folder}/tercom/ \
-    ${out_edit_alignments} \
-    true
+#echo "Generating Tercom alignments for HTER values"
+#bash ./tools/tercom.sh \
+#    ${in_mt_file} \
+#    ${in_pe_file} \
+#    ${out_temporal_folder}/tercom/ \
+#    ${out_edit_alignments} \
+#    true
 
-tail -n +3 ${out_temporal_folder}/tercom/out_tercom_file.ter \
-    | awk '{if ($4 > 1) hter=1; else hter=$4; printf "%.6f\n",hter}' > ${out_folder}/hter
+#tail -n +3 ${out_temporal_folder}/tercom/out_tercom_file.ter \
+#    | awk '{if ($4 > 1) hter=1; else hter=$4; printf "%.6f\n",hter}' > ${out_folder}/hter
 
 if [ ! -z "$prefix" ]
 then
