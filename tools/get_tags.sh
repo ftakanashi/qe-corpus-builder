@@ -88,8 +88,8 @@ then
   cp ${in_mt_file} ${out_folder}/${prefix}.mt
   cp ${in_pe_file} ${out_folder}/${prefix}.pe
 #  mv ${out_folder}/hter ${out_folder}/${prefix}.hter
-  mv ${out_folder}/tags ${out_folder}/${prefix}.tags
-  mv ${out_folder}/source_tags ${out_folder}/${prefix}.source_tags
+#  mv ${out_folder}/tags ${out_folder}/${prefix}.tags
+#  mv ${out_folder}/source_tags ${out_folder}/${prefix}.source_tags
   rm ${out_folder}/source_tags.json
   rm ${out_folder}/${prefix}.pe-mt
   rm ${out_folder}/${prefix}.src-pe
