@@ -200,10 +200,6 @@ def get_quality_tags(mt_tokens, pe_tokens, pe_mt_alignments, pe2source,
         # sequences.
         prev_mt_idx = None
         for pe_idx, mt_idx in pe_mt_alignments[sentence_index]:
-            if mt_idx == prev_mt_idx:
-                continue
-            else:
-                prev_mt_idx = mt_idx
 
             if mt_idx is None:
 
@@ -252,8 +248,12 @@ def get_quality_tags(mt_tokens, pe_tokens, pe_mt_alignments, pe2source,
             elif pe_idx is None:
 
                 # Insertion error
-                sent_tags.append('BAD')
-                mt_position += 1
+                if mt_idx == prev_mt_idx:
+                    if sent_tags[-1] == 'OK':
+                        sent_tags[-1] = 'BAD'
+                else:
+                    sent_tags.append('BAD')
+                    mt_position += 1
 
                 # Store error detail
                 error_detail_sent.append({
@@ -268,8 +268,12 @@ def get_quality_tags(mt_tokens, pe_tokens, pe_mt_alignments, pe2source,
             ):
 
                 # Substitution error
-                sent_tags.append('BAD')
-                mt_position += 1
+                if mt_idx == prev_mt_idx:
+                    if sent_tags[-1] == 'OK':
+                        sent_tags[-1] = 'BAD'
+                else:
+                    sent_tags.append('BAD')
+                    mt_position += 1
 
                 # Aligned words in the source are BAD
                 # RULE: If word exists elsewhere in the sentence do not
@@ -319,12 +323,17 @@ def get_quality_tags(mt_tokens, pe_tokens, pe_mt_alignments, pe2source,
             else:
 
                 # OK
+                if mt_idx == prev_mt_idx:
+                    continue
                 sent_tags.append('OK')
                 mt_position += 1
 
                 source_positions = pe2source[sentence_index][pe_idx]
                 for source_pos in source_positions:
                     source_mt_word_alignment[source_pos].add(mt_idx)
+
+            if mt_idx is not None and mt_idx != prev_mt_idx:
+                prev_mt_idx = mt_idx
 
         # Insert deletion errors as gaps
         if GAP_ERRORS:
@@ -372,8 +381,12 @@ def get_quality_tags(mt_tokens, pe_tokens, pe_mt_alignments, pe2source,
     for sent_i, src_mt_gap_alignment in enumerate(src_mt_gap_alignments):
         for src_i, tgt_is in src_mt_gap_alignment.items():
             assert source_tags[sent_i][src_i] == 'BAD'
+            if source_tags[sent_i][src_i] != 'BAD':
+                raise Exception('INS Source word do not have BAD tag.')
             for tgt_i in tgt_is:
-                assert target_tags[sent_i][tgt_i * 2] == 'BAD'
+                if target_tags[sent_i][tgt_i * 2] != 'BAD':
+                    raise Exception('INS MT gap do not have BAD tag.')
+
     # check the sanity of SRC-MT Word alignment with generated tags
     for sent_i, src_mt_word_alignment in enumerate(src_mt_word_alignments):
         for src_i, tgt_is in src_mt_word_alignment.items():
