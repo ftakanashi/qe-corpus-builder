@@ -198,7 +198,12 @@ def get_quality_tags(mt_tokens, pe_tokens, pe_mt_alignments, pe2source,
 
         # Loop over alignments. This has the length of the edit-distance aligned
         # sequences.
+        prev_mt_idx = None
         for pe_idx, mt_idx in pe_mt_alignments[sentence_index]:
+            if mt_idx == prev_mt_idx:
+                continue
+            else:
+                prev_mt_idx = mt_idx
 
             if mt_idx is None:
 
@@ -265,8 +270,6 @@ def get_quality_tags(mt_tokens, pe_tokens, pe_mt_alignments, pe2source,
                 # Substitution error
                 sent_tags.append('BAD')
                 mt_position += 1
-
-                source_positions = None
 
                 # Aligned words in the source are BAD
                 # RULE: If word exists elsewhere in the sentence do not
@@ -377,8 +380,10 @@ def get_quality_tags(mt_tokens, pe_tokens, pe_mt_alignments, pe2source,
             for tgt_i in tgt_is:
                 src_tag = source_tags[sent_i][src_i]
                 tgt_tag = target_tags[sent_i][tgt_i * 2 + 1]
-                if src_tag == 'OK': assert tgt_tag == 'OK'
-                if tgt_tag == 'BAD': assert src_tag == 'BAD'
+                if src_tag == 'OK' and tgt_tag != 'OK':
+                    raise ValueError('Unmatched Tags')
+                if tgt_tag == 'BAD' and src_tag != 'BAD':
+                    raise ValueError('Unmatched Tags')
 
     # return source_tags, target_tags, error_detail
     return source_tags, target_tags, error_detail, src_mt_word_alignments, src_mt_gap_alignments
