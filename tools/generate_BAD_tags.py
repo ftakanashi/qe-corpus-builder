@@ -321,16 +321,16 @@ def get_quality_tags(mt_tokens, pe_tokens, pe_mt_alignments, pe2source,
                 })
 
             else:
+                source_positions = pe2source[sentence_index][pe_idx]
+                for source_pos in source_positions:
+                    source_mt_word_alignment[source_pos].add(mt_idx)
 
                 # OK
                 if mt_idx == prev_mt_idx:
                     continue
+
                 sent_tags.append('OK')
                 mt_position += 1
-
-                source_positions = pe2source[sentence_index][pe_idx]
-                for source_pos in source_positions:
-                    source_mt_word_alignment[source_pos].add(mt_idx)
 
             if mt_idx is not None and mt_idx != prev_mt_idx:
                 prev_mt_idx = mt_idx
