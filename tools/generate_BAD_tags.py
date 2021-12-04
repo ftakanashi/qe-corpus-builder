@@ -1,13 +1,15 @@
+#!/usr/bin/env python
 import os
 import codecs
 import collections
 import argparse
-from collections import defaultdict
-from itertools import chain
-from collections import Counter
-from operator import itemgetter
 import json
 import sys
+import warnings
+
+from collections import Counter, defaultdict
+from itertools import chain
+from operator import itemgetter
 
 GAP_ERRORS = True
 SOURCE_ERRORS = True
@@ -370,12 +372,14 @@ def get_quality_tags(mt_tokens, pe_tokens, pe_mt_alignments, pe2source,
         src_mt_word_alignments.append(source_mt_word_alignment)
 
     # Basic sanity checks
-    assert all(
-        [len(aa) * 2 + 1 == len(bb) for aa, bb in zip(mt_tokens, target_tags)]
-    ), "tag creation failed"
-    assert all(
-        [len(aa) == len(bb) for aa, bb in zip(source_tokens, source_tags)]
-    ), "tag creation failed"
+    for i in range(len(mt_tokens)):
+        aa, bb = mt_tokens[i], target_tags[i]
+        assert len(aa) * 2 + 1 == len(bb), f"tag creation failed@sentence_index={i}\nLength of MT token[{len(aa)}] does" \
+                                           f"not match that of target tags[{len(bb)}]"
+    for i in range(len(source_tokens)):
+        aa, bb = source_tokens[i], source_tags[i]
+        assert len(aa) == len(bb), f"tag creation failed@sentence_index={i}\nLength of Source tokens[{len(aa)}] does" \
+                                   f"not match that of source tags[{len(bb)}]"
 
     # check the sanity of SRC-MT Gap alignments with generated tags
     for sent_i, src_mt_gap_alignment in enumerate(src_mt_gap_alignments):
@@ -394,9 +398,9 @@ def get_quality_tags(mt_tokens, pe_tokens, pe_mt_alignments, pe2source,
                 src_tag = source_tags[sent_i][src_i]
                 tgt_tag = target_tags[sent_i][tgt_i * 2 + 1]
                 if src_tag == 'OK' and tgt_tag != 'OK':
-                    raise ValueError('Unmatched Tags')
+                    warnings.warn(f"Unmatched tags @sentence_index={sent_i} src_i={src_i} tgt_i={tgt_i}")
                 if tgt_tag == 'BAD' and src_tag != 'BAD':
-                    raise ValueError('Unmatched Tags')
+                    warnings.warn(f"Unmatched tags @sentence_index={sent_i} src_i={src_i} tgt_i={tgt_i}")
 
     # return source_tags, target_tags, error_detail
     return source_tags, target_tags, error_detail, src_mt_word_alignments, src_mt_gap_alignments
